@@ -86,20 +86,81 @@ int is_blockchain_valid(struct Block *blockchain, int blockchain_length)
     return 1;
 }
 
+// Function to display the blockchain
+void display_blockchain(struct Block *blockchain, int blockchain_length)
+{
+    for (int i = 0; i < blockchain_length; i++)
+    {
+        printf("Block %d\n", blockchain[i].index);
+        printf("Timestamp: %s", blockchain[i].timestamp);
+        printf("Data: %s\n", blockchain[i].data);
+        printf("Hash: %s\n", blockchain[i].hash);
+        printf("Previous Hash: %s\n", blockchain[i].previous_hash);
+    }
+}
+
+// Function to save the blockchain to a file
+void save_blockchain(struct Block *blockchain, int blockchain_length)
+{
+    FILE *file = fopen("blockchain.txt", "w");
+    if (file == NULL)
+    {
+        printf("Unable to open file.\n");
+        return;
+    }
+    for (int i = 0; i < blockchain_length; i++)
+    {
+        fprintf(file, "Block %d\n", blockchain[i].index);
+        fprintf(file, "Timestamp: %s", blockchain[i].timestamp);
+        fprintf(file, "Data: %s\n", blockchain[i].data);
+        fprintf(file, "Hash: %s\n", blockchain[i].hash);
+        fprintf(file, "Previous Hash: %s\n", blockchain[i].previous_hash);
+    }
+    fclose(file);
+}
+
+// Function to load the blockchain from a file
+int load_blockchain(struct Block *blockchain)
+{
+    FILE *file = fopen("blockchain.txt", "r");
+    if (file == NULL)
+    {
+        printf("Unable to open file.\n");
+        return -1;
+    }
+    int i = 0;
+    while (fscanf(file, "Block %d\n", &blockchain[i].index) != EOF)
+    {
+        fgets(blockchain[i].timestamp, 50, file);
+        fgets(blockchain[i].data, 50, file);
+        fscanf(file, "Hash: %s\n", blockchain[i].hash);
+        fscanf(file, "Previous Hash: %s\n", blockchain[i].previous_hash);
+        i++;
+    }
+    fclose(file);
+    return i;
+}
+
 // Main function
 int main()
 {
     struct Block blockchain[10];
-    blockchain[0] = create_genesis_block();
-    printf("Block 0 has been added to the blockchain!\n");
-    printf("Hash: %s\n", blockchain[0].hash);
+    int blockchain_length = load_blockchain(blockchain);
+    if (blockchain_length == -1)
+    {
+        blockchain[0] = create_genesis_block();
+        printf("Block 0 has been added to the blockchain!\n");
+        printf("Hash: %s\n", blockchain[0].hash);
+        blockchain_length = 1;
+    }
     int choice, run = 1;
     char data[50];
     while (run)
     {
         printf("1. Add a new block\n");
         printf("2. Validate the blockchain\n");
-        printf("3. Exit\n");
+        printf("3. Display the blockchain\n");
+        printf("4. Exit\n");
         printf("Enter your choice: ");
         scanf("%d", &choice);
         switch (choice)
@@ -107,13 +168,14 @@ int main()
         case 1:
             printf("Enter data for the new block: ");
             scanf("%s", data);
-            struct Block new_block = create_new_block(blockchain[blockchain[0].index], data);
-            blockchain[new_block.index] = new_block;
+            struct Block new_block = create_new_block(blockchain[blockchain_length - 1], data);
+            blockchain[blockchain_length] = new_block;
+            blockchain_length++;
             printf("Block %d has been added to the blockchain!\n", new_block.index);
             printf("Hash: %s\n", new_block.hash);
             break;
         case 2:
-            if (is_blockchain_valid(blockchain, blockchain[0].index + 1))
+            if (is_blockchain_valid(blockchain, blockchain_length))
             {
                 printf("The blockchain is valid.\n");
             }
@@ -123,11 +185,16 @@ int main()
             }
             break;
         case 3:
+            display_blockchain(blockchain, blockchain_length);
+            break;
+        case 4:
+            save_blockchain(blockchain, blockchain_length);
             run = 0;
             break;
         default:
             printf("Invalid choice. Please try again.\n");
         }
     }
+    save_blockchain(blockchain, blockchain_length);
     return 0;
 }
