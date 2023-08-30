@@ -97,7 +97,9 @@ while True:
     elif choice == '3':
         for block in blockchain:
             print("\nBlock #{} has been added to the blockchain!".format(block.index))
-            print("Hash: {}\n".format(block.hash))
+            print("Hash: {}".format(block.hash))
+            print("Data: {}".format(block.data))
+            print("Timestamp: {}\n".format(block.timestamp))
     elif choice == '4':
         break
     else:
