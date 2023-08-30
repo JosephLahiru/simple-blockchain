@@ -41,7 +41,6 @@ def is_chain_valid(blockchain):
             print('Block %d is not linked correctly to block %d.' %
                   (current_block.index, previous_block.index))
             return False
-    print('The blockchain is valid.')
     return True
 
 
