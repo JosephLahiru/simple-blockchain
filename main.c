@@ -14,6 +14,16 @@ struct Block
     char previous_hash[65];
 };
 
+// Function to convert SHA256 hash bytes to a string
+char *sha256_to_str(unsigned char hash[SHA256_DIGEST_LENGTH])
+{
+    char *hash_str = malloc(SHA256_DIGEST_LENGTH * 2 + 1);
+    for (int i = 0; i < SHA256_DIGEST_LENGTH; i++)
+        sprintf(hash_str + (i * 2), "%02x", hash[i]);
+    hash_str[64] = 0;
+    return hash_str;
+}
+
 // Function to calculate the hash for a block
 char *calculate_hash(struct Block block)
 {
@@ -74,16 +84,6 @@ int is_blockchain_valid(struct Block *blockchain, int blockchain_length)
         }
     }
     return 1;
-}
-
-// Function to convert SHA256 hash bytes to a string
-char *sha256_to_str(unsigned char hash[SHA256_DIGEST_LENGTH])
-{
-    char *hash_str = malloc(SHA256_DIGEST_LENGTH * 2 + 1);
-    for (int i = 0; i < SHA256_DIGEST_LENGTH; i++)
-        sprintf(hash_str + (i * 2), "%02x", hash[i]);
-    hash_str[64] = 0;
-    return hash_str;
 }
 
 // Main function
