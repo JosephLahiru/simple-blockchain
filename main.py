@@ -90,9 +90,9 @@ while True:
         print('Hash: {}\n'.format(new_block.hash))
     elif choice == '2':
         if is_chain_valid(blockchain):
-            print("The blockchain is valid.")
+            print("\nThe blockchain is valid.")
         else:
-            print("The blockchain is not valid.")
+            print("\nThe blockchain is not valid.")
     elif choice == '3':
         for block in blockchain:
             print("\nBlock #{} has been added to the blockchain!".format(block.index))
